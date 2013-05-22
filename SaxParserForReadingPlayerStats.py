@@ -22,7 +22,7 @@ def getPlayerStats(soup):
     Converts each row into a data model and then appends them to a list
 
     Data model used by PlayerModel
-    playerModel = {'position': 0, 'name': '', 'matches': 0, 'wickets': 0, 'dots': 0, 'fours': 0,
+    playerModel = {'position': 0, 'name': '','playerID': 0, 'team': '', 'matches': 0, 'wickets': 0, 'dots': 0, 'fours': 0,
                    'sixes': 0, 'catches': 0, 'stumpings': 0, 'points': 0}
     """
     players = []
@@ -34,6 +34,12 @@ def getPlayerStats(soup):
         playerModel = dict()
         playerModel['position'] = int(columns[0].text.strip())
         playerModel['name'] = columns[1].text.strip()
+
+        #Can be defined as a lambda function
+        playerDetails = columns[1].a.get('href').split("/")
+        playerModel['playerID'] = int(playerDetails[-3])
+        playerModel['team'] = playerDetails[-5]
+
         playerModel['matches'] = int(columns[2].text.strip())
         playerModel['wickets'] = int(columns[3].text.strip())
         playerModel['dots'] = int(columns[4].text.strip())
@@ -54,6 +60,6 @@ if __name__ == '__main__':
     players = getPlayerStats(soup)
 
     for player in players:
-        print player
+        print(player)
 
 
