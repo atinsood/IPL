@@ -3,6 +3,7 @@
 """
 
 from bs4 import BeautifulSoup
+import pprint
 
 
 def parseStatsFile(statsFileLocation='data/IPLStats.html'):
@@ -54,12 +55,37 @@ def getPlayerStats(soup):
     return players
 
 
-if __name__ == '__main__':
+def mostValuedTeam(players, variableToInspect='points'):
+    #TODO Can add kwargs here to get a table of totals of wickets, runs etc by team
+    """
+        Iterates through all the players, figures out their teams and sums <variableToInspect> for players belonging to
+        the same team
+        team1 : total<variableToInspect>
+        team2 : total<variableToInspect>
+    """
+    teamDict = dict()
+    for player in players:
+        team = player['team']
+        points = player[variableToInspect]
+        if team in teamDict.keys():
+            teamDict[team] = teamDict[team] + points
+        else:
+            teamDict[team] = points
 
+    pprint.pprint(teamDict)
+
+
+if __name__ == '__main__':
     soup = parseStatsFile()
     players = getPlayerStats(soup)
 
-    for player in players:
-        print(player)
+    # for player in players:
+    #     print(player)
 
-
+    print(' TEAMS SORTED BY POINTS ')
+    print('------------------------')
+    mostValuedTeam(players, 'points')
+    print('#########################')
+    print(' TEAMS SORTED BY WICKETS ')
+    print('------------------------')
+    mostValuedTeam(players, 'wickets')
