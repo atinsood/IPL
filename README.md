@@ -18,8 +18,10 @@ best bet.
 
 Future plans:
 ---
+TBD
 
 Sample Outputs :
+---
 
 ```
  TEAMS SORTED BY POINTS 
