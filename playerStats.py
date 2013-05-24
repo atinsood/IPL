@@ -55,6 +55,46 @@ def getPlayerStats(soup):
     return players
 
 
+def getBatsmenStats(soup):
+    """
+        Takes the parser which was created for batsmen and creates a record for all the stats mentioned
+        Reason certain attributes are kept as string vs float or int is that these fields can have - , *  , ''
+    """
+    #TODO Need to abstract out the common code from the player and batsman function
+
+    batsmen = []
+    rowOfBatsmen = soup.find_all('tr')
+
+    for i in range(1, len(rowOfBatsmen)):
+        row = rowOfBatsmen[i]
+        columns = row.find_all('td')
+        batsmanModel = dict()
+        batsmanModel['position'] = int(columns[0].text.strip())
+        batsmanModel['name'] = columns[1].text.strip()
+
+        #Can be defined as a lambda function
+        batsmenDetails = columns[1].a.get('href').split("/")
+        batsmanModel['playerID'] = int(batsmenDetails[-3])
+        batsmanModel['team'] = batsmenDetails[-5]
+
+        batsmanModel['matches'] = int(columns[2].text.strip())
+        batsmanModel['innings'] = int(columns[3].text.strip())
+        batsmanModel['notOuts'] = int(columns[4].text.strip())
+        batsmanModel['runs'] = int(columns[5].text.strip())
+        batsmanModel['highScore'] = (columns[6].text.strip())
+        batsmanModel['average'] = (columns[7].text.strip())
+        batsmanModel['bf'] = (columns[8].text.strip())
+        batsmanModel['strikeRate'] = (columns[9].text.strip())
+        batsmanModel['100s'] = int(columns[10].text.strip())
+        batsmanModel['50s'] = int(columns[11].text.strip())
+        batsmanModel['4s'] = int(columns[12].text.strip())
+        batsmanModel['6s'] = int(columns[13].text.strip())
+
+        batsmen.append(batsmanModel)
+
+    return batsmen
+
+
 def mostValuedTeam(players, variableToInspect='points'):
     #TODO Can add kwargs here to get a table of totals of wickets, runs etc by team
     """
@@ -68,6 +108,8 @@ def mostValuedTeam(players, variableToInspect='points'):
         team = player['team']
         points = player[variableToInspect]
         if team in teamDict.keys():
+            #TODO This function to do addition or any other calculation should be configurable
+            #by making it as a variable
             teamDict[team] = teamDict[team] + points
         else:
             teamDict[team] = points
@@ -76,8 +118,14 @@ def mostValuedTeam(players, variableToInspect='points'):
 
 
 if __name__ == '__main__':
-    soup = parseStatsFile()
-    players = getPlayerStats(soup)
+    playerSoup = parseStatsFile()
+    players = getPlayerStats(playerSoup)
+
+    batsmenSoup = parseStatsFile('data/IPLRuns.html')
+    batsmen = getBatsmenStats(batsmenSoup)
+
+    #for bastsman in batsmen:
+    #    print bastsman
 
     # for player in players:
     #     print(player)
@@ -89,3 +137,17 @@ if __name__ == '__main__':
     print(' TEAMS SORTED BY WICKETS ')
     print('------------------------')
     mostValuedTeam(players, 'wickets')
+
+
+    print('#########################')
+    print(' TEAMS SORTED BY Runs ')
+    print('------------------------')
+    mostValuedTeam(batsmen, 'runs')
+    print('#########################')
+    print(' TEAMS SORTED BY 6s ')
+    print('------------------------')
+    mostValuedTeam(batsmen, '6s')
+    print('#########################')
+    print(' TEAMS SORTED BY 4s ')
+    print('------------------------')
+    mostValuedTeam(batsmen, '4s')
