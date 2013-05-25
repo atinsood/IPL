@@ -4,6 +4,16 @@
 
 from bs4 import BeautifulSoup
 import pprint
+import operator
+
+removeLeadingCharacter = lambda characterToRemove, stringToRemoveFrom: stringToRemoveFrom.split(characterToRemove)[0]
+
+
+def convertSplCharToNum(param):
+    num = 0
+    if isinstance(param, int) or isinstance(param, float):
+        num = param
+    return num
 
 
 def parseStatsFile(statsFileLocation='data/IPLStats.html'):
@@ -81,10 +91,10 @@ def getBatsmenStats(soup):
         batsmanModel['innings'] = int(columns[3].text.strip())
         batsmanModel['notOuts'] = int(columns[4].text.strip())
         batsmanModel['runs'] = int(columns[5].text.strip())
-        batsmanModel['highScore'] = (columns[6].text.strip())
-        batsmanModel['average'] = (columns[7].text.strip())
-        batsmanModel['bf'] = (columns[8].text.strip())
-        batsmanModel['strikeRate'] = (columns[9].text.strip())
+        batsmanModel['highScore'] = int(removeLeadingCharacter('*', (columns[6].text.strip())))
+        batsmanModel['average'] = float(convertSplCharToNum(columns[7].text.strip()))
+        batsmanModel['bf'] = int(convertSplCharToNum(columns[8].text.strip()))
+        batsmanModel['strikeRate'] = float(convertSplCharToNum(columns[9].text.strip()))
         batsmanModel['100s'] = int(columns[10].text.strip())
         batsmanModel['50s'] = int(columns[11].text.strip())
         batsmanModel['4s'] = int(columns[12].text.strip())
@@ -113,8 +123,12 @@ def mostValuedTeam(players, variableToInspect='points'):
             teamDict[team] = teamDict[team] + points
         else:
             teamDict[team] = points
+    return teamDict
 
-    pprint.pprint(teamDict)
+
+def printSortedByValue(dictToSortByValue):
+    sortedDict = sorted(dictToSortByValue.iteritems(), key=operator.itemgetter(1), reverse=True)
+    pprint.pprint(sortedDict)
 
 
 if __name__ == '__main__':
@@ -132,22 +146,21 @@ if __name__ == '__main__':
 
     print(' TEAMS SORTED BY POINTS ')
     print('------------------------')
-    mostValuedTeam(players, 'points')
+    printSortedByValue(mostValuedTeam(players, 'points'))
     print('#########################')
     print(' TEAMS SORTED BY WICKETS ')
     print('------------------------')
-    mostValuedTeam(players, 'wickets')
-
+    printSortedByValue(mostValuedTeam(players, 'wickets'))
 
     print('#########################')
     print(' TEAMS SORTED BY Runs ')
     print('------------------------')
-    mostValuedTeam(batsmen, 'runs')
+    printSortedByValue(mostValuedTeam(batsmen, 'runs'))
     print('#########################')
     print(' TEAMS SORTED BY 6s ')
     print('------------------------')
-    mostValuedTeam(batsmen, '6s')
+    printSortedByValue(mostValuedTeam(batsmen, '6s'))
     print('#########################')
     print(' TEAMS SORTED BY 4s ')
     print('------------------------')
-    mostValuedTeam(batsmen, '4s')
+    printSortedByValue(mostValuedTeam(batsmen, '4s'))
