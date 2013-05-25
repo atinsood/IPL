@@ -24,7 +24,6 @@ Sample Outputs :
 ---
 
 ```
-/Users/asood/work/opensource/play/IPL/IPLEnv/bin/python /Users/asood/work/opensource/play/IPL/IPLCode/playerStats.py
  TEAMS SORTED BY POINTS 
 ------------------------
 {u'chennai-super-kings': 1919.0,
