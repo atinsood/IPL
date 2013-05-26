@@ -12,10 +12,10 @@ class PlayerStatsHandler(tornado.web.RequestHandler):
 
     def get(self):
         self.players = playerStats.getPlayerStats(self.playerSoup)
-        #results = dict(players=self.players)
-        #self.write(results)
+        results = dict(players=self.players)
         self.set_header("Content-Type", "application/json") 
-        self.write(json.dumps(self.players))
+        callback = self.get_argument("callback", "callback")
+        super(PlayerStatsHandler, self).write(callback+'(' + json.dumps(results) + ')')
         
 
 application = tornado.web.Application([
